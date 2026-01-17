@@ -341,21 +341,21 @@ const IATTest = ({ session, onComplete }: { session: any, onComplete: () => void
 
   // Test Screen
   return (
-    <div className="flex flex-col h-screen bg-slate-900 text-white overflow-hidden">
+    <div className="flex flex-col h-screen bg-slate-900 text-white overflow-hidden select-none">
       {/* Header / Labels */}
-      <div className="flex justify-between items-start p-4 md:p-8 h-24 md:h-32">
-        <div className="text-left w-5/12 text-lg md:text-2xl font-bold uppercase tracking-wider text-blue-400 break-words leading-tight">
+      <div className="flex justify-between items-start p-4 md:p-6 h-28 md:h-32">
+        <div className="flex-1 text-left text-lg md:text-2xl font-bold uppercase tracking-wider text-blue-400 leading-tight">
           {currentBlock.leftCategories.map(c => (
              <div key={c}>{c === Category.BASHKIR ? 'Башкиры' : c === Category.RUSSIAN ? 'Русские' : c === Category.HORSE ? 'Лошади' : 'Коровы'}</div>
           ))}
         </div>
 
         {/* Progress Indicator */}
-        <div className="flex flex-col items-center justify-start w-2/12 mt-1">
-          <div className="text-slate-500 text-[10px] md:text-sm font-medium uppercase tracking-widest mb-1 whitespace-nowrap">
+        <div className="flex flex-col items-center justify-start w-24 pt-1 mx-2">
+          <div className="text-slate-500 text-[10px] md:text-xs font-medium uppercase tracking-widest mb-1 whitespace-nowrap">
             Блок {currentBlockIndex + 1}
           </div>
-          <div className="w-full max-w-[6rem] h-1.5 bg-slate-800 rounded-full overflow-hidden mb-1">
+          <div className="w-full h-1 bg-slate-800 rounded-full overflow-hidden">
              <div 
                className="h-full bg-emerald-500 transition-all duration-300 ease-out" 
                style={{ width: `${(trialCount / currentBlock.trials) * 100}%` }}
@@ -363,7 +363,7 @@ const IATTest = ({ session, onComplete }: { session: any, onComplete: () => void
           </div>
         </div>
 
-        <div className="text-right w-5/12 text-lg md:text-2xl font-bold uppercase tracking-wider text-blue-400 break-words leading-tight">
+        <div className="flex-1 text-right text-lg md:text-2xl font-bold uppercase tracking-wider text-blue-400 leading-tight">
           {currentBlock.rightCategories.map(c => (
              <div key={c}>{c === Category.BASHKIR ? 'Башкиры' : c === Category.RUSSIAN ? 'Русские' : c === Category.HORSE ? 'Лошади' : 'Коровы'}</div>
           ))}
@@ -389,28 +389,28 @@ const IATTest = ({ session, onComplete }: { session: any, onComplete: () => void
             <img 
               src={currentStimulus.content} 
               alt="stimulus" 
-              className="max-h-[30vh] md:max-h-[45vh] w-auto rounded-xl shadow-2xl border-4 border-slate-700"
+              className="max-h-[30vh] md:max-h-[45vh] w-auto rounded-xl shadow-2xl border-4 border-slate-700 select-none pointer-events-none"
             />
           </div>
         )}
       </div>
 
-      {/* Footer Instructions & Controls */}
-      <div className="p-4 pb-8 flex gap-4 w-full justify-center items-stretch h-32 md:h-40 z-10">
+      {/* Footer Controls */}
+      <div className="p-4 pb-8 flex gap-4 md:gap-8 w-full justify-center items-stretch h-36 md:h-48 z-10">
         <button 
-          className="flex-1 max-w-sm bg-slate-800/80 backdrop-blur-sm border-2 border-slate-600 hover:border-emerald-500/50 hover:bg-slate-700 active:bg-slate-600 active:scale-95 rounded-2xl flex flex-col items-center justify-center transition-all shadow-lg active:shadow-inner group"
+          className="flex-1 max-w-md bg-slate-800/90 backdrop-blur-sm border-2 border-slate-600 hover:border-emerald-500/50 hover:bg-slate-700 active:bg-slate-600 active:scale-95 rounded-2xl flex flex-col items-center justify-center transition-all shadow-lg active:shadow-inner group touch-manipulation"
           onMouseDown={() => handleInput('LEFT')}
           onTouchStart={(e) => { e.preventDefault(); handleInput('LEFT'); }}
         >
-          <span className="text-4xl md:text-5xl font-extrabold text-emerald-400 mb-1 group-hover:text-emerald-300">E</span>
+          <span className="text-4xl md:text-6xl font-extrabold text-emerald-400 mb-2 group-hover:text-emerald-300">E</span>
           <span className="text-xs md:text-sm text-slate-400 uppercase tracking-widest font-bold">Лево</span>
         </button>
         <button 
-          className="flex-1 max-w-sm bg-slate-800/80 backdrop-blur-sm border-2 border-slate-600 hover:border-blue-500/50 hover:bg-slate-700 active:bg-slate-600 active:scale-95 rounded-2xl flex flex-col items-center justify-center transition-all shadow-lg active:shadow-inner group"
+          className="flex-1 max-w-md bg-slate-800/90 backdrop-blur-sm border-2 border-slate-600 hover:border-blue-500/50 hover:bg-slate-700 active:bg-slate-600 active:scale-95 rounded-2xl flex flex-col items-center justify-center transition-all shadow-lg active:shadow-inner group touch-manipulation"
           onMouseDown={() => handleInput('RIGHT')}
           onTouchStart={(e) => { e.preventDefault(); handleInput('RIGHT'); }}
         >
-           <span className="text-4xl md:text-5xl font-extrabold text-blue-400 mb-1 group-hover:text-blue-300">I</span>
+           <span className="text-4xl md:text-6xl font-extrabold text-blue-400 mb-2 group-hover:text-blue-300">I</span>
            <span className="text-xs md:text-sm text-slate-400 uppercase tracking-widest font-bold">Право</span>
         </button>
       </div>
