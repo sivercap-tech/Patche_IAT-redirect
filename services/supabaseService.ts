@@ -40,3 +40,28 @@ export const saveResults = async (session: any, results: any) => {
     return { error };
   }
 };
+
+export const recordTransition = async (session: any) => {
+  if (!supabase) return;
+
+  try {
+    // Log the transition event to the same results table, or a specific analytics table if available.
+    // Here we use 'iat_results' with a special payload to indicate a transition.
+    await supabase
+      .from('iat_results')
+      .insert([
+        { 
+          user_id: session.userId,
+          referrer: session.referrer,
+          results_json: { 
+            event: 'transition_to_part_2', 
+            timestamp: Date.now() 
+          },
+          created_at: new Date().toISOString()
+        }
+      ]);
+  } catch (error) {
+    console.error("Error logging transition:", error);
+    // Non-blocking error
+  }
+};
