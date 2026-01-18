@@ -175,14 +175,10 @@ const IATTest = ({ session, onComplete }: { session: UserSession, onComplete: ()
 
   const handleNextTest = async () => {
     setIsTransitioning(true);
-    // Record that the user is proceeding to part 2
     await recordTransition(session);
 
-    // Redirect to the next test URL
-    // We pass the current userId to maintain the session identity across apps/sites
     const separator = NEXT_TEST_URL.includes('?') ? '&' : '?';
-    // Use 'ext_user_id' or just 'userId' depending on what the second app expects
-    window.location.href = `${NEXT_TEST_URL}${separator}originalUserId=${session.userId}`;
+    window.location.href = `${NEXT_TEST_URL}${separator}pid=${session.userId}`;
   };
 
   const nextTrial = useCallback(() => {
