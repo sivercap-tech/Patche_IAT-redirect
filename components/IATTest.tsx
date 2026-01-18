@@ -314,7 +314,7 @@ const IATTest = ({ session, onComplete }: { session: any, onComplete: () => void
              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 border-t border-slate-600 pt-4">
                 <div className="bg-slate-900/50 p-4 rounded-lg">
                   <h3 className="font-bold text-emerald-400 mb-2">Коровы (E)</h3>
-                  <div className="flex justify-center gap-2">
+                  <div className="flex justify-center gap-2 flex-wrap">
                      {COW_IMAGES.map((src, i) => (
                        <img key={i} src={src} className="w-16 h-16 object-cover rounded border border-slate-600" alt="cow" />
                      ))}
@@ -322,7 +322,7 @@ const IATTest = ({ session, onComplete }: { session: any, onComplete: () => void
                 </div>
                 <div className="bg-slate-900/50 p-4 rounded-lg">
                   <h3 className="font-bold text-blue-400 mb-2">Лошади (I)</h3>
-                  <div className="flex justify-center gap-2">
+                  <div className="flex justify-center gap-2 flex-wrap">
                      {HORSE_IMAGES.map((src, i) => (
                        <img key={i} src={src} className="w-16 h-16 object-cover rounded border border-slate-600" alt="horse" />
                      ))}
