@@ -3,10 +3,7 @@ import { Category, Stimulus, StimulusType } from './types';
 // Supabase Configuration
 export const SUPABASE_URL = "https://gqulzoctsltwxmzvofwv.supabase.co"; 
 export const SUPABASE_KEY = "sb_publishable_alcHOMdoEOvJmuSvwEeeoQ_HnbodgT3";
-
-// URL for the second part of the test
-// TODO: Replace this with the actual URL of the second IAT test
-export const NEXT_TEST_URL = "https://example.com/second-iat-part";
+export const NEXT_TEST_URL = "https://sivercap-tech.github.io/iat-with-redirect-nature/";
 
 // Bashkir Words
 export const BASHKIR_WORDS = [
