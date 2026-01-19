@@ -384,32 +384,34 @@ const IATTest = ({ session, onComplete }: { session: UserSession, onComplete: ()
           </div>
         )}
 
-        {/* Шаг 2: Примеры категорий */}
+        // patch 1.1
         {introStep === 1 && (
-          <div className="bg-slate-800 p-4 md:p-8 rounded-xl border border-slate-700 shadow-2xl w-full flex flex-col items-center">
-            <p className="text-lg md:text-2xl text-slate-300 mb-6">Запомните категории и примеры:</p>
+          // Добавили pb-24 для мобилок, чтобы контент не перекрывался кнопкой
+          <div className="bg-slate-800 p-2 md:p-8 rounded-xl border border-slate-700 shadow-2xl w-full flex flex-col items-center pb-24 md:pb-8">
+            <p className="text-base md:text-2xl text-slate-300 mb-4 md:mb-6">Запомните категории и примеры:</p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 text-left mb-8 w-full">
+            {/* Изменили grid-cols-1 на grid-cols-2 для мобилок, чтобы сэкономить место по вертикали */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6 text-left mb-2 w-full">
               {/* Bashkirs */}
-              <div className="bg-slate-900/60 p-4 rounded-lg border border-slate-700">
-                <h3 className="font-bold text-emerald-400 text-lg mb-2 text-center border-b border-slate-700 pb-2">Башкиры</h3>
-                <ul className="text-slate-300 space-y-1 text-sm md:text-base text-center">
+              <div className="bg-slate-900/60 p-2 md:p-4 rounded-lg border border-slate-700">
+                <h3 className="font-bold text-emerald-400 text-sm md:text-lg mb-2 text-center border-b border-slate-700 pb-1">Башкиры</h3>
+                <ul className="text-slate-300 space-y-0.5 text-[10px] md:text-base text-center leading-tight">
                   {BASHKIR_WORDS.map((w) => <li key={w}>{w}</li>)}
                 </ul>
               </div>
 
               {/* Russians */}
-              <div className="bg-slate-900/60 p-4 rounded-lg border border-slate-700">
-                <h3 className="font-bold text-blue-400 text-lg mb-2 text-center border-b border-slate-700 pb-2">Русские</h3>
-                <ul className="text-slate-300 space-y-1 text-sm md:text-base text-center">
+              <div className="bg-slate-900/60 p-2 md:p-4 rounded-lg border border-slate-700">
+                <h3 className="font-bold text-blue-400 text-sm md:text-lg mb-2 text-center border-b border-slate-700 pb-1">Русские</h3>
+                <ul className="text-slate-300 space-y-0.5 text-[10px] md:text-base text-center leading-tight">
                   {RUSSIAN_WORDS.map((w) => <li key={w}>{w}</li>)}
                 </ul>
               </div>
 
               {/* Horses */}
-              <div className="bg-slate-900/60 p-4 rounded-lg border border-slate-700">
-                <h3 className="font-bold text-emerald-400 text-lg mb-2 text-center border-b border-slate-700 pb-2">Лошади</h3>
-                <div className="grid grid-cols-2 gap-2">
+              <div className="bg-slate-900/60 p-2 md:p-4 rounded-lg border border-slate-700">
+                <h3 className="font-bold text-emerald-400 text-sm md:text-lg mb-2 text-center border-b border-slate-700 pb-1">Лошади</h3>
+                <div className="grid grid-cols-2 gap-1 md:gap-2">
                   {HORSE_IMAGES.slice(0, 4).map((src, i) => (
                     <div key={i} className="aspect-square bg-slate-800 rounded overflow-hidden">
                       <img src={src} className="w-full h-full object-cover" alt="Horse" onError={handleImageError} />
@@ -419,9 +421,9 @@ const IATTest = ({ session, onComplete }: { session: UserSession, onComplete: ()
               </div>
 
               {/* Cows */}
-              <div className="bg-slate-900/60 p-4 rounded-lg border border-slate-700">
-                <h3 className="font-bold text-blue-400 text-lg mb-2 text-center border-b border-slate-700 pb-2">Коровы</h3>
-                <div className="grid grid-cols-2 gap-2">
+              <div className="bg-slate-900/60 p-2 md:p-4 rounded-lg border border-slate-700">
+                <h3 className="font-bold text-blue-400 text-sm md:text-lg mb-2 text-center border-b border-slate-700 pb-1">Коровы</h3>
+                <div className="grid grid-cols-2 gap-1 md:gap-2">
                    {COW_IMAGES.slice(0, 4).map((src, i) => (
                     <div key={i} className="aspect-square bg-slate-800 rounded overflow-hidden">
                       <img src={src} className="w-full h-full object-cover" alt="Cow" onError={handleImageError} />
@@ -431,47 +433,47 @@ const IATTest = ({ session, onComplete }: { session: UserSession, onComplete: ()
               </div>
             </div>
 
-        <button 
+            {/* Кнопка теперь фиксирована внизу экрана на мобильных (fixed bottom-6) */}
+            <button 
               onClick={() => handleInput('SPACE')}
-              className="w-full md:w-auto bg-emerald-600 hover:bg-emerald-500 text-white text-xl font-bold py-4 px-12 rounded-full shadow-lg transition-transform active:scale-95 animate-pulse"
+              className="fixed bottom-6 left-4 right-4 md:static md:w-auto bg-emerald-600 hover:bg-emerald-500 text-white text-xl font-bold py-3 md:py-4 px-12 rounded-full shadow-lg transition-transform active:scale-95 animate-pulse z-50"
             >
-              Далее
+              Начать тест
             </button>
           </div>
         )}
-      </div>
-    );
-  }
 
   // Instruction Screen (for Blocks)
+  // patch 1.1
   if (isInstruction) {
     return (
       <div 
-        className="flex flex-col items-center justify-center min-h-screen bg-slate-900 text-white p-8 text-center max-w-5xl mx-auto cursor-pointer"
-        onClick={() => handleInput('SPACE')} // Allow click to start
+        className="flex flex-col items-center justify-center min-h-screen bg-slate-900 text-white p-2 md:p-8 text-center max-w-5xl mx-auto cursor-pointer"
+        onClick={() => handleInput('SPACE')}
       >
-        <h2 className="text-xl md:text-2xl font-bold mb-4 text-blue-400">{currentBlock.title}</h2>
-        <div className="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-2xl mb-6 select-none w-full max-w-3xl">
-        <pre className="whitespace-pre-wrap font-sans text-sm md:text-xl leading-relaxed text-slate-200 mb-4">
-    {currentBlock.instruction}
+        <h2 className="text-lg md:text-3xl font-bold mb-2 md:mb-4 text-blue-400">{currentBlock.title}</h2>
+        
+        <div className="bg-slate-800 p-3 md:p-6 rounded-xl border border-slate-700 shadow-2xl mb-4 select-none w-full max-w-3xl">
+          <pre className="whitespace-pre-wrap font-sans text-sm md:text-xl leading-relaxed text-slate-200 mb-2 md:mb-4">
+            {currentBlock.instruction}
           </pre>
           
           {/* Block 1: Words - Bashkir (Left), Russian (Right) */}
           {currentBlock.id === 1 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 text-left border-t border-slate-600 pt-4">
-              <div className="bg-slate-900/50 p-4 rounded-lg">
-                <h3 className="font-bold text-emerald-400 mb-2 text-center">Башкирские (E)</h3>
-                <div className="flex flex-wrap gap-2 justify-center">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 mt-2 text-left border-t border-slate-600 pt-2 md:pt-4">
+              <div className="bg-slate-900/50 p-2 md:p-4 rounded-lg">
+                <h3 className="font-bold text-emerald-400 mb-1 md:mb-2 text-center text-sm md:text-lg">Башкирские (E)</h3>
+                <div className="flex flex-wrap gap-1 md:gap-2 justify-center">
                   {BASHKIR_WORDS.map(w => (
-                    <span key={w} className="px-2 py-1 bg-emerald-900/40 border border-emerald-500/30 rounded text-sm text-emerald-100">{w}</span>
+                    <span key={w} className="px-1.5 py-0.5 md:px-2 md:py-1 bg-emerald-900/40 border border-emerald-500/30 rounded text-[10px] md:text-sm text-emerald-100">{w}</span>
                   ))}
                 </div>
               </div>
-              <div className="bg-slate-900/50 p-4 rounded-lg">
-                <h3 className="font-bold text-blue-400 mb-2 text-center">Русские (I)</h3>
-                <div className="flex flex-wrap gap-2 justify-center">
+              <div className="bg-slate-900/50 p-2 md:p-4 rounded-lg">
+                <h3 className="font-bold text-blue-400 mb-1 md:mb-2 text-center text-sm md:text-lg">Русские (I)</h3>
+                <div className="flex flex-wrap gap-1 md:gap-2 justify-center">
                   {RUSSIAN_WORDS.map(w => (
-                    <span key={w} className="px-2 py-1 bg-blue-900/40 border border-blue-500/30 rounded text-sm text-blue-100">{w}</span>
+                    <span key={w} className="px-1.5 py-0.5 md:px-2 md:py-1 bg-blue-900/40 border border-blue-500/30 rounded text-[10px] md:text-sm text-blue-100">{w}</span>
                   ))}
                 </div>
               </div>
@@ -480,20 +482,20 @@ const IATTest = ({ session, onComplete }: { session: UserSession, onComplete: ()
 
           {/* Block 5: Words - Russian (Left), Bashkir (Right) */}
           {currentBlock.id === 5 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 text-left border-t border-slate-600 pt-4">
-              <div className="bg-slate-900/50 p-4 rounded-lg">
-                <h3 className="font-bold text-emerald-400 mb-2 text-center">Русские (E)</h3>
-                <div className="flex flex-wrap gap-2 justify-center">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 mt-2 text-left border-t border-slate-600 pt-2 md:pt-4">
+              <div className="bg-slate-900/50 p-2 md:p-4 rounded-lg">
+                <h3 className="font-bold text-emerald-400 mb-1 md:mb-2 text-center text-sm md:text-lg">Русские (E)</h3>
+                <div className="flex flex-wrap gap-1 md:gap-2 justify-center">
                   {RUSSIAN_WORDS.map(w => (
-                    <span key={w} className="px-2 py-1 bg-emerald-900/40 border border-emerald-500/30 rounded text-sm text-emerald-100">{w}</span>
+                    <span key={w} className="px-1.5 py-0.5 md:px-2 md:py-1 bg-emerald-900/40 border border-emerald-500/30 rounded text-[10px] md:text-sm text-emerald-100">{w}</span>
                   ))}
                 </div>
               </div>
-              <div className="bg-slate-900/50 p-4 rounded-lg">
-                <h3 className="font-bold text-blue-400 mb-2 text-center">Башкирские (I)</h3>
-                <div className="flex flex-wrap gap-2 justify-center">
+              <div className="bg-slate-900/50 p-2 md:p-4 rounded-lg">
+                <h3 className="font-bold text-blue-400 mb-1 md:mb-2 text-center text-sm md:text-lg">Башкирские (I)</h3>
+                <div className="flex flex-wrap gap-1 md:gap-2 justify-center">
                   {BASHKIR_WORDS.map(w => (
-                    <span key={w} className="px-2 py-1 bg-blue-900/40 border border-blue-500/30 rounded text-sm text-blue-100">{w}</span>
+                    <span key={w} className="px-1.5 py-0.5 md:px-2 md:py-1 bg-blue-900/40 border border-blue-500/30 rounded text-[10px] md:text-sm text-blue-100">{w}</span>
                   ))}
                 </div>
               </div>
@@ -502,12 +504,12 @@ const IATTest = ({ session, onComplete }: { session: UserSession, onComplete: ()
 
           {/* Block 2: Images - Horse (Left), Cow (Right) */}
           {currentBlock.id === 2 && (
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 border-t border-slate-600 pt-4">
-                <div className="bg-slate-900/50 p-4 rounded-lg">
-                  <h3 className="font-bold text-emerald-400 mb-2 text-center">Лошади (E)</h3>
-                  <div className="flex justify-center gap-2 flex-wrap">
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 mt-2 border-t border-slate-600 pt-2 md:pt-4">
+                <div className="bg-slate-900/50 p-2 md:p-4 rounded-lg">
+                  <h3 className="font-bold text-emerald-400 mb-1 md:mb-2 text-center text-sm md:text-lg">Лошади (E)</h3>
+                  <div className="flex justify-center gap-1 md:gap-2 flex-wrap">
                      {HORSE_IMAGES.map((src, i) => (
-                       <div key={i} className="flex items-center justify-center bg-slate-800 rounded border border-slate-600 w-14 h-14 overflow-hidden">
+                       <div key={i} className="flex items-center justify-center bg-slate-800 rounded border border-slate-600 w-10 h-10 md:w-14 md:h-14 overflow-hidden">
                          <img 
                            src={src} 
                            className="w-full h-full object-cover" 
@@ -518,11 +520,11 @@ const IATTest = ({ session, onComplete }: { session: UserSession, onComplete: ()
                      ))}
                   </div>
                 </div>
-                <div className="bg-slate-900/50 p-4 rounded-lg">
-                  <h3 className="font-bold text-blue-400 mb-2 text-center">Коровы (I)</h3>
-                  <div className="flex justify-center gap-2 flex-wrap">
+                <div className="bg-slate-900/50 p-2 md:p-4 rounded-lg">
+                  <h3 className="font-bold text-blue-400 mb-1 md:mb-2 text-center text-sm md:text-lg">Коровы (I)</h3>
+                  <div className="flex justify-center gap-1 md:gap-2 flex-wrap">
                      {COW_IMAGES.map((src, i) => (
-                       <div key={i} className="flex items-center justify-center bg-slate-800 rounded border border-slate-600 w-14 h-14 overflow-hidden">
+                       <div key={i} className="flex items-center justify-center bg-slate-800 rounded border border-slate-600 w-10 h-10 md:w-14 md:h-14 overflow-hidden">
                          <img 
                            src={src} 
                            className="w-full h-full object-cover" 
@@ -535,6 +537,14 @@ const IATTest = ({ session, onComplete }: { session: UserSession, onComplete: ()
                 </div>
              </div>
           )}
+
+        </div>
+        <div className="animate-pulse text-emerald-400 font-bold text-base md:text-2xl">
+          Нажмите на экран или ПРОБЕЛ
+        </div>
+      </div>
+    );
+  }
 
         </div>
         <div className="animate-pulse text-emerald-400 font-bold text-lg">
