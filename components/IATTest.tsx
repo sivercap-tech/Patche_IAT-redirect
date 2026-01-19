@@ -1,41 +1,44 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { STIMULI_POOL, BASHKIR_WORDS, RUSSIAN_WORDS, COW_IMAGES, HORSE_IMAGES, NEXT_TEST_URL } from '../constants';
+import { STIMULI_POOL, BASHKIR_WORDS, RUSSIAN_WORDS, SWAMP_IMAGES, MOUNTAIN_IMAGES } from '../constants';
 import { Category, StimulusType, UserSession, BlockConfig } from '../types';
-import { saveResults, recordTransition } from '../services/supabaseService';
+import { saveResults } from '../services/supabaseService';
 
 // Helper to get random item
 const getRandom = (arr: any[]) => arr[Math.floor(Math.random() * arr.length)];
 
 // Generate blocks based on counterbalancing group
 const getBlocks = (group: 'A' | 'B'): BlockConfig[] => {
-  // Group A: Standard (Bashkir+Horse vs Russian+Cow)
-  // Group B: Inverted (Bashkir+Cow vs Russian+Horse)
+  // Group A: Standard (Bashkir+Mountain vs Russian+Swamp)
+  // Group B: Inverted (Bashkir+Swamp vs Russian+Mountain)
   
   const isGroupA = group === 'A';
 
   const combinedBlock1_Left = isGroupA 
-    ? [Category.BASHKIR, Category.HORSE] 
-    : [Category.BASHKIR, Category.COW];
+    ? [Category.BASHKIR, Category.MOUNTAIN] 
+    : [Category.BASHKIR, Category.SWAMP];
   
   const combinedBlock1_Right = isGroupA 
-    ? [Category.RUSSIAN, Category.COW] 
-    : [Category.RUSSIAN, Category.HORSE];
+    ? [Category.RUSSIAN, Category.SWAMP] 
+    : [Category.RUSSIAN, Category.MOUNTAIN];
 
   const combinedBlock1_Instruct = isGroupA
-    ? "Нажимайте 'E' для БАШКИРЫ или ЛОШАДИ.\nНажимайте 'I' для РУССКИЕ или КОРОВЫ."
-    : "Нажимайте 'E' для БАШКИРЫ или КОРОВЫ.\nНажимайте 'I' для РУССКИЕ или ЛОШАДИ.";
+    ? "Нажимайте 'E' для БАШКИРЫ или ГОРЫ.\nНажимайте 'I' для РУССКИЕ или БОЛОТА."
+    : "Нажимайте 'E' для БАШКИРЫ или БОЛОТА.\nНажимайте 'I' для РУССКИЕ или ГОРЫ.";
 
+  // After swapping words in Block 5 (Russian is now Left, Bashkir is Right)
+  // We need to swap the images to match the *opposite* pairing logic of the first combined block
+  
   const combinedBlock2_Left = isGroupA
-    ? [Category.RUSSIAN, Category.HORSE]
-    : [Category.RUSSIAN, Category.COW];
+    ? [Category.RUSSIAN, Category.MOUNTAIN]
+    : [Category.RUSSIAN, Category.SWAMP];
 
   const combinedBlock2_Right = isGroupA
-    ? [Category.BASHKIR, Category.COW]
-    : [Category.BASHKIR, Category.HORSE];
+    ? [Category.BASHKIR, Category.SWAMP]
+    : [Category.BASHKIR, Category.MOUNTAIN];
 
   const combinedBlock2_Instruct = isGroupA
-    ? "Нажимайте 'E' для РУССКИЕ или ЛОШАДИ.\nНажимайте 'I' для БАШКИРЫ или КОРОВЫ."
-    : "Нажимайте 'E' для РУССКИЕ или КОРОВЫ.\nНажимайте 'I' для БАШКИРЫ или ЛОШАДИ.";
+    ? "Нажимайте 'E' для РУССКИЕ или ГОРЫ.\nНажимайте 'I' для БАШКИРЫ или БОЛОТА."
+    : "Нажимайте 'E' для РУССКИЕ или БОЛОТА.\nНажимайте 'I' для БАШКИРЫ или ГОРЫ.";
 
   return [
     {
@@ -49,9 +52,9 @@ const getBlocks = (group: 'A' | 'B'): BlockConfig[] => {
     {
       id: 2,
       title: "Блок 2 из 7: Тренировка изображений",
-      instruction: "Запомните изображения для каждой категории.\nНажимайте 'E' (слева) для ЛОШАДЕЙ.\nНажимайте 'I' (справа) для КОРОВ.",
-      leftCategories: [Category.HORSE],
-      rightCategories: [Category.COW],
+      instruction: "Запомните изображения для каждой категории.\nНажимайте 'E' (слева) для ГОР.\nНажимайте 'I' (справа) для БОЛОТ.",
+      leftCategories: [Category.MOUNTAIN],
+      rightCategories: [Category.SWAMP],
       trials: 20
     },
     {
@@ -114,7 +117,7 @@ const IATTest = ({ session, onComplete }: { session: UserSession, onComplete: ()
   const [finished, setFinished] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
 
   // Debounce Ref
   const lastInputTime = useRef(0);
@@ -134,7 +137,6 @@ const IATTest = ({ session, onComplete }: { session: UserSession, onComplete: ()
     trialCount,
     finished,
     isSaving,
-    isTransitioning,
     blocks
   });
 
@@ -150,10 +152,9 @@ const IATTest = ({ session, onComplete }: { session: UserSession, onComplete: ()
       trialCount, 
       finished,
       isSaving,
-      isTransitioning,
       blocks
     };
-  }, [showGeneralIntro, currentBlockIndex, isInstruction, currentStimulus, startTime, mistake, trialCount, finished, isSaving, isTransitioning, blocks]);
+  }, [showGeneralIntro, currentBlockIndex, isInstruction, currentStimulus, startTime, mistake, trialCount, finished, isSaving, blocks]);
 
   const finishTest = useCallback(async (finalResults: any[]) => {
     setFinished(true);
@@ -169,14 +170,6 @@ const IATTest = ({ session, onComplete }: { session: UserSession, onComplete: ()
       setSaveError(response.error.message || "Неизвестная ошибка при сохранении");
     }
   }, [session]);
-
-  const handleNextTest = async () => {
-    setIsTransitioning(true);
-    await recordTransition(session);
-
-    const separator = NEXT_TEST_URL.includes('?') ? '&' : '?';
-    window.location.href = `${NEXT_TEST_URL}${separator}pid=${session.userId}`;
-  };
 
   const nextTrial = useCallback(() => {
     const blocksLocal = stateRef.current.blocks;
@@ -214,7 +207,7 @@ const IATTest = ({ session, onComplete }: { session: UserSession, onComplete: ()
     lastInputTime.current = now;
 
     const state = stateRef.current;
-    if (state.finished || state.isSaving || state.isTransitioning) return;
+    if (state.finished || state.isSaving) return;
 
     // Handle General Intro Screen
     if (state.showGeneralIntro) {
@@ -257,7 +250,7 @@ const IATTest = ({ session, onComplete }: { session: UserSession, onComplete: ()
       
       const result = {
         blockId: block.id,
-        blockName: block.title,
+        blockName: block.title, 
         stimulusId: state.currentStimulus.id,
         category: state.currentStimulus.category,
         isCorrect: !state.mistake,
@@ -278,6 +271,16 @@ const IATTest = ({ session, onComplete }: { session: UserSession, onComplete: ()
     }
   }, [nextTrial, results, finishTest]);
 
+  const handleShare = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy: ', err);
+    }
+  };
+
   useEffect(() => {
     const listener = (e: KeyboardEvent) => {
       if (e.code === 'Space') {
@@ -293,7 +296,7 @@ const IATTest = ({ session, onComplete }: { session: UserSession, onComplete: ()
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     const target = e.target as HTMLImageElement;
-    target.style.display = 'none';
+    target.style.display = 'none'; 
     const parent = target.parentElement;
     if (parent) {
       const errorText = document.createElement('span');
@@ -307,7 +310,7 @@ const IATTest = ({ session, onComplete }: { session: UserSession, onComplete: ()
   if (finished) {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-slate-900 text-white p-8 text-center">
-        <h1 className="text-4xl font-bold mb-4 text-emerald-400">Спасибо! И последнее.</h1>
+        <h1 className="text-4xl font-bold mb-4 text-emerald-400">Тест завершен!</h1>
         
         {isSaving ? (
           <div className="flex flex-col items-center">
@@ -321,24 +324,38 @@ const IATTest = ({ session, onComplete }: { session: UserSession, onComplete: ()
             <p className="text-sm text-slate-400">Пожалуйста, сообщите администратору или проверьте настройки Supabase URL.</p>
           </div>
         ) : (
-          <p className="text-lg mb-8 text-slate-300">Данные успешно сохранены.</p>
+          <p className="text-lg mb-8 text-slate-300">Данные успешно сохранены. Спасибо за прохождение всего теста!</p>
         )}
 
-        {isTransitioning ? (
-           <div className="flex flex-col items-center mt-4">
-              <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-2"></div>
-              <p className="text-emerald-400">Переход ко второй части...</p>
-           </div>
-        ) : (
-          <div className="flex gap-4 mt-4">
-            <button 
-              onClick={handleNextTest}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-lg font-bold text-lg transition-colors shadow-lg hover:scale-105 transform duration-200"
-            >
-              Перейти к последней части
-            </button>
-          </div>
-        )}
+        <div className="flex gap-4 mt-4">
+          <button 
+            onClick={() => window.location.href = `https://panel.anketolog.ru/s/exf?s=0&ui=${session.userId}`}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-bold text-lg transition-colors"
+          >
+            Завершить тест
+          </button>
+          
+          <button 
+            onClick={handleShare}
+            className={`px-8 py-3 rounded-lg font-bold text-lg transition-colors flex items-center gap-2 ${
+              isCopied 
+                ? 'bg-emerald-600 hover:bg-emerald-700 text-white' 
+                : 'bg-slate-700 hover:bg-slate-600 text-slate-200'
+            }`}
+          >
+            {isCopied ? (
+              <>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                Скопировано!
+              </>
+            ) : (
+              <>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
+                Поделиться
+              </>
+            )}
+          </button>
+        </div>
       </div>
     );
   }
@@ -393,25 +410,25 @@ const IATTest = ({ session, onComplete }: { session: UserSession, onComplete: ()
                 </ul>
               </div>
 
-              {/* Horses */}
+              {/* Mountain */}
               <div className="bg-slate-900/60 p-2 md:p-4 rounded-lg border border-slate-700">
-                <h3 className="font-bold text-emerald-400 text-sm md:text-lg mb-2 text-center border-b border-slate-700 pb-1">Лошади</h3>
+                <h3 className="font-bold text-emerald-400 text-sm md:text-lg mb-2 text-center border-b border-slate-700 pb-1">Горы</h3>
                 <div className="grid grid-cols-2 gap-1 md:gap-2">
-                  {HORSE_IMAGES.slice(0, 4).map((src, i) => (
+                  {MOUNTAIN_IMAGES.slice(0, 4).map((src, i) => (
                     <div key={i} className="aspect-square bg-slate-800 rounded overflow-hidden">
-                      <img src={src} className="w-full h-full object-cover" alt="Horse" onError={handleImageError} />
+                      <img src={src} className="w-full h-full object-cover" alt="Mountain" onError={handleImageError} />
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* Cows */}
+              {/* Swamp */}
               <div className="bg-slate-900/60 p-2 md:p-4 rounded-lg border border-slate-700">
-                <h3 className="font-bold text-blue-400 text-sm md:text-lg mb-2 text-center border-b border-slate-700 pb-1">Коровы</h3>
+                <h3 className="font-bold text-blue-400 text-sm md:text-lg mb-2 text-center border-b border-slate-700 pb-1">Болота</h3>
                 <div className="grid grid-cols-2 gap-1 md:gap-2">
-                   {COW_IMAGES.slice(0, 4).map((src, i) => (
+                   {SWAMP_IMAGES.slice(0, 4).map((src, i) => (
                     <div key={i} className="aspect-square bg-slate-800 rounded overflow-hidden">
-                      <img src={src} className="w-full h-full object-cover" alt="Cow" onError={handleImageError} />
+                      <img src={src} className="w-full h-full object-cover" alt="Swamp" onError={handleImageError} />
                     </div>
                   ))}
                 </div>
@@ -422,7 +439,7 @@ const IATTest = ({ session, onComplete }: { session: UserSession, onComplete: ()
               onClick={() => handleInput('SPACE')}
               className="fixed bottom-6 left-4 right-4 md:static md:w-auto bg-emerald-600 hover:bg-emerald-500 text-white text-xl font-bold py-3 md:py-4 px-12 rounded-full shadow-lg transition-transform active:scale-95 animate-pulse z-50"
             >
-              Далее
+              Начать тест
             </button>
           </div>
         )}
@@ -489,18 +506,18 @@ const IATTest = ({ session, onComplete }: { session: UserSession, onComplete: ()
             </div>
           )}
 
-          {/* Block 2: Images - Horse (Left), Cow (Right) */}
+          {/* Block 2: Images - Mountain (Left), Swamp (Right) */}
           {currentBlock.id === 2 && (
              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 mt-2 border-t border-slate-600 pt-2 md:pt-4">
                 <div className="bg-slate-900/50 p-2 md:p-4 rounded-lg">
-                  <h3 className="font-bold text-emerald-400 mb-1 md:mb-2 text-center text-sm md:text-lg">Лошади (E)</h3>
+                  <h3 className="font-bold text-emerald-400 mb-1 md:mb-2 text-center text-sm md:text-lg">Горы (E)</h3>
                   <div className="flex justify-center gap-1 md:gap-2 flex-wrap">
-                     {HORSE_IMAGES.map((src, i) => (
+                     {MOUNTAIN_IMAGES.map((src, i) => (
                        <div key={i} className="flex items-center justify-center bg-slate-800 rounded border border-slate-600 w-10 h-10 md:w-14 md:h-14 overflow-hidden">
                          <img 
                            src={src} 
                            className="w-full h-full object-cover" 
-                           alt={`Horse ${i+1}`}
+                           alt={`Mountain ${i+1}`}
                            onError={handleImageError}
                          />
                        </div>
@@ -508,14 +525,14 @@ const IATTest = ({ session, onComplete }: { session: UserSession, onComplete: ()
                   </div>
                 </div>
                 <div className="bg-slate-900/50 p-2 md:p-4 rounded-lg">
-                  <h3 className="font-bold text-blue-400 mb-1 md:mb-2 text-center text-sm md:text-lg">Коровы (I)</h3>
+                  <h3 className="font-bold text-blue-400 mb-1 md:mb-2 text-center text-sm md:text-lg">Болота (I)</h3>
                   <div className="flex justify-center gap-1 md:gap-2 flex-wrap">
-                     {COW_IMAGES.map((src, i) => (
+                     {SWAMP_IMAGES.map((src, i) => (
                        <div key={i} className="flex items-center justify-center bg-slate-800 rounded border border-slate-600 w-10 h-10 md:w-14 md:h-14 overflow-hidden">
                          <img 
                            src={src} 
                            className="w-full h-full object-cover" 
-                           alt={`Cow ${i+1}`}
+                           alt={`Swamp ${i+1}`}
                            onError={handleImageError}
                          />
                        </div>
@@ -541,7 +558,7 @@ const IATTest = ({ session, onComplete }: { session: UserSession, onComplete: ()
         
         <div className="flex-1 text-left text-lg md:text-2xl font-bold uppercase tracking-wider text-blue-400 leading-tight">
           {currentBlock.leftCategories.map(c => (
-             <div key={c}>{c === Category.BASHKIR ? 'Башкиры' : c === Category.RUSSIAN ? 'Русские' : c === Category.HORSE ? 'Лошади' : 'Коровы'}</div>
+             <div key={c}>{c === Category.BASHKIR ? 'Башкиры' : c === Category.RUSSIAN ? 'Русские' : c === Category.MOUNTAIN ? 'Горы' : 'Болота'}</div>
           ))}
         </div>
 
@@ -560,7 +577,7 @@ const IATTest = ({ session, onComplete }: { session: UserSession, onComplete: ()
 
         <div className="flex-1 text-right text-lg md:text-2xl font-bold uppercase tracking-wider text-blue-400 leading-tight">
           {currentBlock.rightCategories.map(c => (
-             <div key={c}>{c === Category.BASHKIR ? 'Башкиры' : c === Category.RUSSIAN ? 'Русские' : c === Category.HORSE ? 'Лошади' : 'Коровы'}</div>
+             <div key={c}>{c === Category.BASHKIR ? 'Башкиры' : c === Category.RUSSIAN ? 'Русские' : c === Category.MOUNTAIN ? 'Горы' : 'Болота'}</div>
           ))}
         </div>
       </div>
@@ -597,22 +614,22 @@ const IATTest = ({ session, onComplete }: { session: UserSession, onComplete: ()
       </div>
 
       {/* Footer Controls */}
-      <div className="p-4 pb-8 mb-16 md:mb-0 flex gap-4 md:gap-8 w-full justify-center items-stretch h-36 md:h-48 z-10">
+      <div className="p-4 pb-8 mb-16 flex xl:hidden gap-4 w-full justify-center items-stretch h-36 z-10">
         <button 
           className="flex-1 max-w-md bg-slate-800/90 backdrop-blur-sm border-2 border-slate-600 hover:border-emerald-500/50 hover:bg-slate-700 active:bg-slate-600 active:scale-95 rounded-2xl flex flex-col items-center justify-center transition-all shadow-lg active:shadow-inner group touch-manipulation"
           onMouseDown={() => handleInput('LEFT')}
           onTouchStart={(e) => { e.preventDefault(); handleInput('LEFT'); }}
         >
-          <span className="text-4xl md:text-6xl font-extrabold text-emerald-400 mb-2 group-hover:text-emerald-300">E</span>
-          <span className="text-xs md:text-sm text-slate-400 uppercase tracking-widest font-bold">Лево</span>
+          <span className="text-4xl font-extrabold text-emerald-400 mb-2 group-hover:text-emerald-300">E</span>
+          <span className="text-xs text-slate-400 uppercase tracking-widest font-bold">Лево</span>
         </button>
         <button 
           className="flex-1 max-w-md bg-slate-800/90 backdrop-blur-sm border-2 border-slate-600 hover:border-blue-500/50 hover:bg-slate-700 active:bg-slate-600 active:scale-95 rounded-2xl flex flex-col items-center justify-center transition-all shadow-lg active:shadow-inner group touch-manipulation"
           onMouseDown={() => handleInput('RIGHT')}
           onTouchStart={(e) => { e.preventDefault(); handleInput('RIGHT'); }}
         >
-           <span className="text-4xl md:text-6xl font-extrabold text-blue-400 mb-2 group-hover:text-blue-300">I</span>
-           <span className="text-xs md:text-sm text-slate-400 uppercase tracking-widest font-bold">Право</span>
+           <span className="text-4xl font-extrabold text-blue-400 mb-2 group-hover:text-blue-300">I</span>
+           <span className="text-xs text-slate-400 uppercase tracking-widest font-bold">Право</span>
         </button>
       </div>
     </div>
