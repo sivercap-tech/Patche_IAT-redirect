@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { STIMULI_POOL, BASHKIR_WORDS, RUSSIAN_WORDS, COW_IMAGES, HORSE_IMAGES, NEXT_TEST_URL } from './constants';
-import { Category, StimulusType, UserSession, BlockConfig } from '../types';
-import { saveResults, recordTransition } from '../services/supabaseService';
+import { Category, StimulusType, UserSession, BlockConfig } from './types';
+import { saveResults, recordTransition } from './services/supabaseService';
 
 // Helper to get random item
 const getRandom = (arr: any[]) => arr[Math.floor(Math.random() * arr.length)];
