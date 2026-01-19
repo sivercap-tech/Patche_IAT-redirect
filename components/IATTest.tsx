@@ -358,43 +358,43 @@ const IATTest = ({ session, onComplete }: { session: UserSession, onComplete: ()
   if (showGeneralIntro) {
     return (
       <div 
-        className="flex flex-col items-center justify-center min-h-screen bg-slate-900 text-white p-4 md:p-8 text-center max-w-7xl mx-auto cursor-pointer"
+        className="flex flex-col items-center justify-center min-h-screen bg-slate-900 text-white p-4 text-center max-w-7xl mx-auto cursor-pointer"
         onClick={() => handleInput('SPACE')}
       >
-        <div className="bg-slate-800 p-4 rounded-xl border border-slate-700 shadow-2xl mb-8 w-full">
-          <p className="text-sm md:text-2xl leading-relaxed text-slate-200 mb-8 max-w-4xl mx-auto">
+        <div className="bg-slate-800 p-4 md:p-8 rounded-xl border border-slate-700 shadow-2xl mb-4 md:mb-8 w-full">
+          <p className="text-base md:text-2xl leading-relaxed text-slate-200 mb-6 md:mb-8 max-w-4xl mx-auto">
             Постарайтесь действовать как можно быстрее, но при этом сохранять внимательность, чтобы допустить минимум ошибок. 
             <br/><br/>
             Вы будете использовать клавиши 
             <span className="font-bold text-emerald-400 mx-2">'E'</span> и 
             <span className="font-bold text-blue-400 mx-2">'I'</span> 
-            на клавиатуре, чтобы как можно быстрее относить слова и картинки к разным группам. 
+            (или кнопки на экране), чтобы как можно быстрее относить слова и картинки к разным группам. 
             <br/><br/>
             Если вы ошибетесь, на экране появится <span className="text-red-500 font-bold">X</span> красного цвета. Нажмите другую кнопку для продолжения.
             <br/><br/>
             Ниже показаны четыре группы и примеры элементов, которые к ним относятся:
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 text-left">
             {/* Bashkirs */}
-            <div className="bg-slate-900/60 p-5 rounded-lg border border-slate-700">
-              <h3 className="font-bold text-emerald-400 text-lg mb-4 text-center border-b border-slate-700 pb-2">Башкиры</h3>
-              <ul className="text-slate-300 space-y-1 text-sm text-center">
+            <div className="bg-slate-900/60 p-4 md:p-5 rounded-lg border border-slate-700">
+              <h3 className="font-bold text-emerald-400 text-lg mb-2 md:mb-4 text-center border-b border-slate-700 pb-2">Башкиры</h3>
+              <ul className="text-slate-300 space-y-1 text-sm md:text-base text-center">
                 {BASHKIR_WORDS.map((w) => <li key={w}>{w}</li>)}
               </ul>
             </div>
 
             {/* Russians */}
-            <div className="bg-slate-900/60 p-5 rounded-lg border border-slate-700">
-              <h3 className="font-bold text-blue-400 text-xl mb-4 text-center border-b border-slate-700 pb-2">Русские</h3>
-              <ul className="text-slate-300 space-y-1 text-sm text-center">
+            <div className="bg-slate-900/60 p-4 md:p-5 rounded-lg border border-slate-700">
+              <h3 className="font-bold text-blue-400 text-lg md:text-xl mb-2 md:mb-4 text-center border-b border-slate-700 pb-2">Русские</h3>
+              <ul className="text-slate-300 space-y-1 text-sm md:text-base text-center">
                 {RUSSIAN_WORDS.map((w) => <li key={w}>{w}</li>)}
               </ul>
             </div>
 
             {/* Horses */}
-            <div className="bg-slate-900/60 p-5 rounded-lg border border-slate-700">
-              <h3 className="font-bold text-emerald-400 text-xl mb-4 text-center border-b border-slate-700 pb-2">Лошади</h3>
+            <div className="bg-slate-900/60 p-4 md:p-5 rounded-lg border border-slate-700">
+              <h3 className="font-bold text-emerald-400 text-lg md:text-xl mb-2 md:mb-4 text-center border-b border-slate-700 pb-2">Лошади</h3>
               <div className="grid grid-cols-2 gap-2">
                 {HORSE_IMAGES.slice(0, 4).map((src, i) => (
                   <div key={i} className="aspect-square bg-slate-800 rounded overflow-hidden">
@@ -405,8 +405,8 @@ const IATTest = ({ session, onComplete }: { session: UserSession, onComplete: ()
             </div>
 
             {/* Cows */}
-            <div className="bg-slate-900/60 p-5 rounded-lg border border-slate-700">
-              <h3 className="font-bold text-blue-400 text-xl mb-4 text-center border-b border-slate-700 pb-2">Коровы</h3>
+            <div className="bg-slate-900/60 p-4 md:p-5 rounded-lg border border-slate-700">
+              <h3 className="font-bold text-blue-400 text-lg md:text-xl mb-2 md:mb-4 text-center border-b border-slate-700 pb-2">Коровы</h3>
               <div className="grid grid-cols-2 gap-2">
                  {COW_IMAGES.slice(0, 4).map((src, i) => (
                   <div key={i} className="aspect-square bg-slate-800 rounded overflow-hidden">
@@ -418,8 +418,8 @@ const IATTest = ({ session, onComplete }: { session: UserSession, onComplete: ()
           </div>
         </div>
 
-        <div className="animate-pulse text-emerald-400 font-bold text-xl md:text-2xl mt-4">
-          Нажмите ПРОБЕЛ, чтобы продолжить
+        <div className="animate-pulse text-emerald-400 font-bold text-lg md:text-2xl mt-2 px-4">
+          Нажмите на экран или ПРОБЕЛ, чтобы продолжить
         </div>
       </div>
     );
